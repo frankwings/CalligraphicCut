@@ -60,8 +60,8 @@ def gradients(img: np.ndarray, mode: str = "luma"):
 
 @dataclass
 class Params:
-    xi1: float = 0.02          # |grad| <= xi1  -> region 1 (flat), tangent unreliable
-    xi2: float = 0.15          # |n_x|  <= xi2  -> region 3 (near-horizontal edge), unreliable
+    xi1: float = 0.003         # |grad| <= xi1  -> region 1 (flat), tangent unreliable
+    xi2: float = 0.3           # |n_x|  <= xi2  -> region 3 (near-horizontal edge), unreliable
     grad_mode: str = "luma"
     alpha_cap: float | None = None   # optional |alpha| clamp (D4)
     link_energy: str = "pixel"       # 'pixel' (paper) or 'segmax' for reliable links too

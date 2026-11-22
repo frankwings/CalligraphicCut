@@ -49,9 +49,11 @@ def main():
     ap.add_argument("--grid", default="default")
     a = ap.parse_args()
     cfgs = ["SC"]
-    for x1, x2 in itertools.product([0.001, 0.003, 0.006, 0.012], [0.05, 0.15, 0.3]):
+    if a.grid == "best":
+        cfgs.append(dict(xi1=0.003, xi2=0.3, grad_mode="luma"))
+    for x1, x2 in ([] if a.grid == "best" else None) or itertools.product([0.001, 0.003, 0.006, 0.012], [0.05, 0.15, 0.3]):
         cfgs.append(dict(xi1=x1, xi2=x2, grad_mode="luma"))
-    for x1 in [0.001, 0.003, 0.006, 0.012]:
+    for x1 in ([] if a.grid == "best" else [0.001, 0.003, 0.006, 0.012]):
         cfgs.append(dict(xi1=x1, xi2=0.15, grad_mode="rgb"))
     jobs = [(n, c) for n in a.images.split(",") for c in cfgs]
     res = []
