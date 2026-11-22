@@ -65,6 +65,7 @@ class Params:
     grad_mode: str = "luma"
     alpha_cap: float | None = None   # optional |alpha| clamp (D4)
     link_energy: str = "pixel"       # 'pixel' (paper) or 'segmax' for reliable links too
+    backend: str = "numba"           # 'numba' (fast) or 'numpy' (reference)
 
 
 # ----------------------------------------------------------------------------
@@ -154,6 +155,12 @@ def trace(X, link, n0):
 
 def best_cut_one_dir(img, p: Params):
     gx, gy, mag = gradients(img, p.grad_mode)
+    if p.backend == "numba" and p.link_energy == "pixel":
+        from . import fast
+        X, link = fast.build_axes(gx, gy, mag, p.xi1, p.xi2, p.alpha_cap or 0.0)
+        E = fast.accumulate(link, mag)
+        n0 = int(np.argmin(E))
+        return float(E[n0]), fast.trace(X, link, n0)
     X, link = build_axes(gx, gy, mag, p)
     E = accumulate(link, mag, p)
     n0 = int(np.argmin(E))
@@ -186,8 +193,14 @@ def left_weights(c0, c1, Wout):
     return (_G(c1 - j) - _G(c0 - j)) / d
 
 
-def remove_cut(img, xs):
+def remove_cut(img, xs, backend="numba"):
     """Remove the width-1 strip around medial axis xs; returns H x (W-1) image."""
+    if backend == "numba":
+        from . import fast
+        im = np.ascontiguousarray(img, dtype=np.float64)
+        if im.ndim == 2:
+            return fast.remove_cut(im[..., None], xs)[..., 0]
+        return fast.remove_cut(im, xs)
     H, W = img.shape[:2]
     out = np.empty((H, W - 1) + img.shape[2:], dtype=np.float64)
     for k in range(H):
@@ -205,7 +218,7 @@ def resize_width(img, target_w, p: Params | None = None, record=None):
         _, xs = best_cut(cur, p)
         if record is not None:
             record.append(xs)
-        cur = remove_cut(cur, xs)
+        cur = remove_cut(cur, xs, p.backend)
     return cur
 
 
