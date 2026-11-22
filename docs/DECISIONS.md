@@ -13,3 +13,8 @@ Boss approved 2026-11-22.
 
 Metric note: SSIM/PSNR vs the 2013 outputs is alignment-sensitive (mean SSIM: best 0.47, SC 0.38);
 use it for ranking only, final judgement is visual (out/sweep1_visual.png).
+
+## Hold-out (cc_holdout1, 10 unseen RetargetMe images, 2026-11-22)
+- xi2=0.3 is the robust choice: all four xi2=0.3 configs top the table (mean SSIM 0.414-0.435 vs SC 0.350).
+- xi1 is flat within 0.001-0.012; keep 0.003 (beats SC on 8/10).
+- Visual (out/holdout1_visual.png): python CC ~= 2013 MatLab on pigeons/glasses/girls/waterfall; SC breaks the man's head (pigeons) and glasses frame.
