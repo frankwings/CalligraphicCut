@@ -45,6 +45,7 @@ out = resize(img_float_rgb_0to1, target_w=300, p=Params(xi1=0.003, xi2=0.3))
 | `calligraphic_cut/cli.py`, `server.py` | `cc-resize` CLI, `cc-server` Gradio lab |
 | `deploy/` | systemd user unit |
 | `scripts/` | `cc_resize` (wrapper), `teaser`, `fig2`, `sweep` (param search), `run_all` (RetargetMe batch), `make_montages`, `viz_cuts` |
+| `docs/USAGE.md` | 使用说明（网页实验室 / 命令行 / API，含截图） |
 | `docs/ARCHITECTURE.md` | algorithm, implementation details, architecture, exactness contract, performance |
 | `docs/DECISIONS.md` | every place the paper is silent/inconsistent and what we chose |
 
