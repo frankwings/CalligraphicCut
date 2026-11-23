@@ -43,5 +43,15 @@ out = resize(img_float_rgb_0to1, target_w=300, p=Params(xi1=0.003, xi2=0.3))
 
 Defaults `xi1=0.003, xi2=0.3` (luminance Sobel/8, image in [0,1]); tuned on 7 images, confirmed on 10 hold-out.
 
+## Tests
+* `tests/test_core.py`, `tests/test_fast.py` — unit tests; numba == numpy bit-exact, cut by cut.
+* `tests/test_e2e_paper.py` — **end-to-end, pinned to the paper** (~15 s):
+  * A. paper claims on the paper's own figures vs the 2013 MatLab outputs (`tests/data/paper/`):
+    Fig. 2 every shape pixel kept + mask IoU > 0.99 with 2013 (SC < 0.8); teaser 50 % structurally closer
+    to 2013 than SC; face 75 % preserved (Fig. 12). Each claim is also asserted to fail for SC.
+  * B. golden regression: exact uint8 outputs in `tests/data/golden/`. Intended change →
+    `UPDATE_GOLDEN=1 python3 -m pytest tests/test_e2e_paper.py`, re-check A + visuals, commit goldens.
+  * Mutation-checked: xi1=0.02 or tangent-following disabled (alpha=0) both make the suite fail.
+
 ## Not (yet) covered
 Enlarging (paper does not define it); improved seam carving (forward energy) baseline; saliency maps.
