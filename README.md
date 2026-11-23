@@ -29,17 +29,19 @@ out = resize(img_float_rgb_0to1, target_w=300, p=Params(xi1=0.003, xi2=0.3))
 | path | content |
 |---|---|
 | `calligraphic_cut/core.py` | numpy reference: gradients, medial-axis construction (Sec 4.2), energy accumulation + horizontal chains (4.3), both directions, area-weighted removal (4.1) |
-| `calligraphic_cut/fast.py` | numba kernels, **bit-identical** to the reference (tested), 10–16× faster |
+| `calligraphic_cut/fast.py` | numba kernels + incremental resize engine, **bit-identical** to the reference (tested), ~35× faster |
 | `calligraphic_cut/seam_carving.py` | baseline: original seam carving (Avidan & Shamir 2007) |
 | `scripts/` | `cc_resize` CLI, `teaser`, `fig2`, `sweep` (param search), `run_all` (RetargetMe batch), `make_montages`, `viz_cuts` |
+| `docs/ARCHITECTURE.md` | algorithm, implementation details, architecture, exactness contract, performance |
 | `docs/DECISIONS.md` | every place the paper is silent/inconsistent and what we chose |
 
 ## Validation (vs. the 2013 MatLab outputs)
 * Paper Fig. 2 (two-colour ellipses, 512→189): identical behaviour — ellipses intact, SC breaks them.
 * Teaser (Toledo cathedral, 50% / 66%): pointed arch moves down intact, doors preserved, as in the paper.
-* 36 RetargetMe cases (incl. one vertical): CC-python closer to the 2013 result than SC in 28/36
-  (mean SSIM 0.398 vs 0.328). SSIM vs a retargeted reference is alignment-sensitive → used for ranking only.
-* Speed (numba, 1 core): 512×683 → 50% in 3.8 s; 1024-wide → 50% ≈ 45–55 s.
+* 36 RetargetMe cases (incl. one vertical): CC-python closer to the 2013 result than SC in 26–28/36
+  (mean SSIM ≈0.38–0.40 vs 0.33; varies between equivalent builds, see ARCHITECTURE §3.6).
+  SSIM vs a retargeted reference is alignment-sensitive → used for ranking only.
+* Speed (numba engine, 1 core): face 392→294 0.16 s; teaser 512×683 → 50% 1.2 s; 1024×697 → 50% 5.6 s.
 
 Defaults `xi1=0.003, xi2=0.3` (luminance Sobel/8, image in [0,1]); tuned on 7 images, confirmed on 10 hold-out.
 
