@@ -29,3 +29,28 @@ def test_numba_matches_numpy_cut_by_cut():
 def test_numba_full_resize_equal():
     img = _img(5)
     assert np.array_equal(resize_width(img, 35, Params(backend="numpy")), resize_width(img, 35, Params(backend="numba")))
+
+
+def test_incremental_gradients_equal_full_recompute():
+    """After every cut the band-updated luma/gradients must equal a full recompute, bit for bit."""
+    from calligraphic_cut import fast
+    from calligraphic_cut.core import gradients, to_gray
+    img = _img(7, 50, 70)
+    L, gx, gy, mag = fast.init_state(img)
+    cur = img
+    for _ in range(25):
+        _, xs = fast.best_cut_state(gx, gy, mag, 0.003, 0.3, 0.0)
+        cur, L, gx, gy, mag = fast.cut_update(cur, L, gx, gy, mag, xs)
+        rx, ry, rm = gradients(cur)
+        assert np.array_equal(L, to_gray(cur))
+        assert np.array_equal(gx, rx) and np.array_equal(gy, ry) and np.array_equal(mag, rm)
+
+
+def test_fast_resize_equals_reference_on_paper_images():
+    import os
+    from calligraphic_cut.io import load
+    d = os.path.join(os.path.dirname(__file__), "data", "paper")
+    for f, tw in [("face_orig.png", 330), ("fig2_orig.png", 400)]:
+        img = load(os.path.join(d, f))
+        assert np.array_equal(resize_width(img, tw, Params(backend="numpy")),
+                              resize_width(img, tw, Params(backend="numba")))

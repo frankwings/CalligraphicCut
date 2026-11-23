@@ -35,15 +35,29 @@ _LUMA = np.array([0.299, 0.587, 0.114])
 
 
 def to_gray(img: np.ndarray) -> np.ndarray:
-    return img @ _LUMA if img.ndim == 3 else img
+    """Luminance; explicit expression (not BLAS) so fast.py reproduces it bit-exactly."""
+    if img.ndim == 2:
+        return img
+    return (0.299 * img[..., 0] + 0.587 * img[..., 1]) + 0.114 * img[..., 2]
+
+
+def sobel(L: np.ndarray):
+    """Sobel/8 with edge replication ('nearest').  Written with an order-symmetric
+    smoothing ((a + c) + 2b) so that, exactly in floating point,
+        sobel(L[::-1]) == (gx[::-1], -gy[::-1])
+    which lets the opposite cut direction reuse the same gradients (fast.py)."""
+    Lp = np.pad(L, 1, mode="edge")
+    dx = Lp[:, 2:] - Lp[:, :-2]                   # (H+2, W) horizontal differences
+    gx = ((dx[:-2] + dx[2:]) + 2.0 * dx[1:-1]) / 8.0
+    dy = Lp[2:] - Lp[:-2]                         # (H, W+2) vertical differences
+    gy = ((dy[:, :-2] + dy[:, 2:]) + 2.0 * dy[:, 1:-1]) / 8.0
+    return gx, gy
 
 
 def gradients(img: np.ndarray, mode: str = "luma"):
     """Return (gx, gy, mag) as derivatives per pixel (Sobel / 8)."""
     if mode == "luma":
-        g = to_gray(img)
-        gx = ndimage.sobel(g, axis=1, mode="nearest") / 8.0
-        gy = ndimage.sobel(g, axis=0, mode="nearest") / 8.0
+        gx, gy = sobel(to_gray(img))
         return gx, gy, np.hypot(gx, gy)
     if mode == "rgb":
         # direction from the channel-summed structure (sign-aligned to luma),
@@ -157,7 +171,7 @@ def best_cut_one_dir(img, p: Params):
     gx, gy, mag = gradients(img, p.grad_mode)
     if p.backend == "numba" and p.link_energy == "pixel":
         from . import fast
-        X, link = fast.build_axes(gx, gy, mag, p.xi1, p.xi2, p.alpha_cap or 0.0)
+        X, link = fast.build_axes(gx, gy, mag, p.xi1, p.xi2, p.alpha_cap or 0.0, 1.0)
         E = fast.accumulate(link, mag)
         n0 = int(np.argmin(E))
         return float(E[n0]), fast.trace(X, link, n0)
@@ -214,6 +228,10 @@ def remove_cut(img, xs, backend="numba"):
 def resize_width(img, target_w, p: Params | None = None, record=None):
     p = p or Params()
     cur = np.asarray(img, dtype=np.float64)
+    if (p.backend == "numba" and p.grad_mode == "luma" and p.link_energy == "pixel"
+            and record is None and cur.ndim == 3 and cur.shape[1] > target_w):
+        from . import fast
+        return fast.resize_width(np.ascontiguousarray(cur), int(target_w), p.xi1, p.xi2, p.alpha_cap or 0.0)
     while cur.shape[1] > target_w:
         _, xs = best_cut(cur, p)
         if record is not None:
