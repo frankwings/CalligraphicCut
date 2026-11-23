@@ -71,3 +71,9 @@ Defaults `xi1=0.003, xi2=0.3` (luminance Sobel/8, image in [0,1]); tuned on 7 im
 
 ## Not (yet) covered
 Enlarging (paper does not define it); improved seam carving (forward energy) baseline; saliency maps.
+
+## License
+Code: MIT © 2026 Zengyn42 (see `LICENSE`).
+Test/demo images under `tests/data/` and `docs/img/` are third-party (RetargetMe benchmark images,
+a photograph of Toledo Cathedral, and figures/results of the 2013 paper) and are included for research
+reproduction only; they are not covered by the MIT license.
