@@ -15,6 +15,7 @@ area-weighted mix of exactly two old pixels.
 
 ## Usage
 ```bash
+git clone https://github.com/frankwings/CalligraphicCut.git && cd CalligraphicCut
 ./install.sh                 # venv + deps + smoke test  (--service: systemd unit, --dev: run tests)
 .venv/bin/cc-resize in.png out.png --width 300        # shrink width (CLI)
 .venv/bin/cc-resize in.png out.png --height 400       # shrink height
