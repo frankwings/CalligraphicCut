@@ -15,7 +15,7 @@ area-weighted mix of exactly two old pixels.
 
 ## Usage
 ```bash
-python3 -m venv --system-site-packages .venv && .venv/bin/pip install -e ".[server]"
+./install.sh                 # venv + deps + smoke test  (--service: systemd unit, --dev: run tests)
 .venv/bin/cc-resize in.png out.png --width 300        # shrink width (CLI)
 .venv/bin/cc-resize in.png out.png --height 400       # shrink height
 .venv/bin/cc-server                                   # local lab UI: http://127.0.0.1:8097

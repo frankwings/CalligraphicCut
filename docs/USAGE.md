@@ -5,6 +5,17 @@
 
 ---
 
+## 0. 安装
+
+```bash
+git clone git@github.com:frankwings/CalligraphicCut.git && cd CalligraphicCut
+./install.sh              # 建 .venv、安装依赖（numpy/scipy/numba/pillow/gradio）、冒烟测试
+./install.sh --service    # 另外安装并启动 systemd 用户服务（127.0.0.1:8097）
+./install.sh --dev        # 另外安装测试依赖并跑全部测试
+```
+可选：`--system-site` 复用系统已装的包（更快）；`PYTHON=python3.11`、`CC_PORT=9000` 指定解释器/端口。
+需要 Python ≥ 3.10（Debian/Ubuntu 需 `python3-venv`）。
+
 ## 1. 启动本地网页实验室
 
 服务已作为 systemd 用户服务部署，开机自启：
