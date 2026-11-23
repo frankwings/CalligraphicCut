@@ -1,3 +1,26 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "calligraphic-cut"
+version = "0.2.0"
+description = "Calligraphic Cutting image resizing (Wang & Akleman, CGI 2013) - Python re-implementation"
+requires-python = ">=3.10"
+dependencies = ["numpy", "scipy", "numba", "pillow"]
+
+[project.optional-dependencies]
+server = ["gradio>=5"]
+eval = ["scikit-image"]
+dev = ["pytest", "scikit-image"]
+
+[project.scripts]
+cc-resize = "calligraphic_cut.cli:main"
+cc-server = "calligraphic_cut.server:main"
+
+[tool.setuptools]
+packages = ["calligraphic_cut"]
+
 [tool.pytest.ini_options]
 pythonpath = ["."]
 testpaths = ["tests"]

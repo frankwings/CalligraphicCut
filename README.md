@@ -15,9 +15,10 @@ area-weighted mix of exactly two old pixels.
 
 ## Usage
 ```bash
-pip install numpy scipy numba pillow scikit-image   # scikit-image only for scripts/sweep & run_all
-python3 scripts/cc_resize.py in.png out.png --width 300          # shrink width
-python3 scripts/cc_resize.py in.png out.png --height 400         # shrink height (transpose)
+python3 -m venv --system-site-packages .venv && .venv/bin/pip install -e ".[server]"
+.venv/bin/cc-resize in.png out.png --width 300        # shrink width (CLI)
+.venv/bin/cc-resize in.png out.png --height 400       # shrink height
+.venv/bin/cc-server                                   # local lab UI: http://127.0.0.1:8097
 python3 -m pytest -q
 ```
 ```python
@@ -25,13 +26,25 @@ from calligraphic_cut import Params, resize
 out = resize(img_float_rgb_0to1, target_w=300, p=Params(xi1=0.003, xi2=0.3))
 ```
 
+### Local lab server (`cc-server`, Gradio)
+* **Resize & compare** — upload (or pick a paper example), width/height %, ξ1/ξ2, CC vs seam carving vs
+  scaling side by side with timings; optional perturbation seed (1e-9 noise) to see run-to-run spread.
+* **Progressive** — N frames from 100 % down to the target, next cut drawn in red.
+* Lossless PNG output; inputs larger than 1600 px are downscaled. API usable via `gradio_client`
+  (`/run_resize`, `/run_progressive`).
+* Deployed as systemd user unit: `deploy/calligraphiccut.service`
+  (`systemctl --user restart calligraphiccut`; logs `journalctl --user -u calligraphiccut`).
+  Behind a path proxy set `CC_ROOT_PATH=/cc`.
+
 ## Layout
 | path | content |
 |---|---|
 | `calligraphic_cut/core.py` | numpy reference: gradients, medial-axis construction (Sec 4.2), energy accumulation + horizontal chains (4.3), both directions, area-weighted removal (4.1) |
 | `calligraphic_cut/fast.py` | numba kernels + incremental resize engine, **bit-identical** to the reference (tested), ~35× faster |
 | `calligraphic_cut/seam_carving.py` | baseline: original seam carving (Avidan & Shamir 2007) |
-| `scripts/` | `cc_resize` CLI, `teaser`, `fig2`, `sweep` (param search), `run_all` (RetargetMe batch), `make_montages`, `viz_cuts` |
+| `calligraphic_cut/cli.py`, `server.py` | `cc-resize` CLI, `cc-server` Gradio lab |
+| `deploy/` | systemd user unit |
+| `scripts/` | `cc_resize` (wrapper), `teaser`, `fig2`, `sweep` (param search), `run_all` (RetargetMe batch), `make_montages`, `viz_cuts` |
 | `docs/ARCHITECTURE.md` | algorithm, implementation details, architecture, exactness contract, performance |
 | `docs/DECISIONS.md` | every place the paper is silent/inconsistent and what we chose |
 

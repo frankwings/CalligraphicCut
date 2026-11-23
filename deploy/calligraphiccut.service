@@ -1,0 +1,17 @@
+# systemd --user unit.  Install:
+#   cp deploy/calligraphiccut.service ~/.config/systemd/user/ && systemctl --user daemon-reload
+#   systemctl --user enable --now calligraphiccut
+[Unit]
+Description=Calligraphic Cutting local lab (Gradio) on 127.0.0.1:8097
+After=network.target
+
+[Service]
+WorkingDirectory=%h/Projects/CalligraphicCut
+ExecStart=%h/Projects/CalligraphicCut/.venv/bin/cc-server --host 127.0.0.1 --port 8097
+Environment=OMP_NUM_THREADS=2
+Environment=GRADIO_ANALYTICS_ENABLED=False
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=default.target
