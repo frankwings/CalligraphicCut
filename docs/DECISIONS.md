@@ -1,6 +1,6 @@
 # Implementation decisions (paper is silent / inconsistent)
 
-Boss approved 2026-11-22.
+Approved by the paper author, 2026-11-22.
 
 | # | Gap in paper | Decision |
 |---|---|---|
@@ -19,7 +19,7 @@ use it for ranking only, final judgement is visual (out/sweep1_visual.png).
 - xi1 is flat within 0.001-0.012; keep 0.003 (beats SC on 8/10).
 - Visual (out/holdout1_visual.png): python CC ~= 2013 MatLab on pigeons/glasses/girls/waterfall; SC breaks the man's head (pigeons) and glasses frame.
 
-## D7 Sensitivity to tiny perturbations — accepted, no tie-breaking (Boss, 2026-11-22)
+## D7 Sensitivity to tiny perturbations — accepted, no tie-breaking (author decision, 2026-11-22)
 - Floating-point order (e.g. BLAS vs explicit luma, ~1e-16 on 20 % of pixels) changes single
   trajectories (teaser diverges at cut #101) but NOT the quality distribution
   (10-run medians identical: face 0.0306/0.0307, teaser 0.0651/0.0651) -> irrelevant.
