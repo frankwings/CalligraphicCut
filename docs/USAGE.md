@@ -1,6 +1,5 @@
 # CalligraphicCut — User Guide
 
-([中文版](USAGE.zh.md))
 
 Python re-implementation of Calligraphic Cutting (Wang & Akleman, CGI 2013). Three ways to use it:
 the **local web lab** (recommended), the **command line**, and the **Python API**.

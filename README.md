@@ -4,6 +4,12 @@ Python re-implementation of **Calligraphic Cutting: Discrete Image Resizing with
 (Youyou Wang, Ergun Akleman — CGI 2013). The original MatLab code was lost; this version was rebuilt
 from the paper, its LaTeX sources, figures and the 2013 result images (2026-11).
 
+![Teaser: Toledo cathedral resized to 50% width with scaling, seam carving and calligraphic cutting](docs/img/teaser.jpg)
+
+*Paper teaser, reproduced with this code: 512 → 256 px wide. Scaling changes slopes and curvatures;
+seam carving breaks the pillars and the pointed arch; calligraphic cutting keeps them intact and moves
+the arch down. Run it yourself: `.venv/bin/cc-resize tests/data/paper/teaser_orig.jpg out.png --width 256`.*
+
 ## Idea in one paragraph
 Seam carving removes 8-connected pixel paths, so once flat regions are used up it must cut across
 edges (jaggies, broken lines). Calligraphic cuts are defined in the continuous domain: a width-λ strip
@@ -46,7 +52,7 @@ out = resize(img_float_rgb_0to1, target_w=300, p=Params(xi1=0.003, xi2=0.3))
 | `calligraphic_cut/cli.py`, `server.py` | `cc-resize` CLI, `cc-server` Gradio lab |
 | `deploy/` | systemd user unit |
 | `scripts/` | `cc_resize` (wrapper), `teaser`, `fig2`, `sweep` (param search), `run_all` (RetargetMe batch), `make_montages`, `viz_cuts` |
-| `docs/USAGE.md` | user guide with screenshots: web lab / CLI / API ([中文](docs/USAGE.zh.md)) |
+| `docs/USAGE.md` | user guide with screenshots: web lab / CLI / API |
 | `docs/ARCHITECTURE.md` | algorithm, implementation details, architecture, exactness contract, performance |
 | `docs/DECISIONS.md` | every place the paper is silent/inconsistent and what we chose |
 
