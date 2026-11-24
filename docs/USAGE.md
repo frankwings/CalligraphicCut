@@ -7,10 +7,19 @@ Shrinking only — the paper does not define enlarging.
 
 ---
 
-## 0. Install
+## 0. Quick start (any OS)
 
 ```bash
 git clone https://github.com/frankwings/CalligraphicCut.git && cd CalligraphicCut
+python3 launch.py          # Windows: py launch.py
+```
+`launch.py` needs only Python ≥ 3.10. The first run creates `.venv` and installs the dependencies
+(a few minutes); every run then starts the lab and opens it in your browser. Stop it with Ctrl+C or
+by closing the window. Options: `--port 9000`, `--no-browser`.
+
+## 0b. Install with install.sh (Linux; optional systemd service)
+
+```bash
 ./install.sh              # creates .venv, installs numpy/scipy/numba/pillow/gradio, runs a self-test
 ./install.sh --dev        # also installs test dependencies and runs the full test suite
 ./install.sh --service    # Linux only: also installs and starts a systemd user service on 127.0.0.1:8097
